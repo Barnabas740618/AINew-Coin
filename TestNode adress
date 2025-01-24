@@ -1,0 +1,16 @@
+As per my previous promise, I am releasing the test version of the AInew Node responsible for transactions of AInew coins. 
+Based on the Swagger documentation, a successful POST request can be programmed.
+The Test Node accepts the following wallet addresses:
+
+Test_Wallet_1, Test_Wallet_2, Test_Wallet_3
+
+These wallets are initially preloaded with 500 coins, but the balance may change depending on the successful requests sent.
+
+Therefore, it is possible that you may encounter an error due to insufficient balance, with a response indicating that there
+are not enough coins in the wallet. In such cases, it is advisable to choose another wallet as the sender, as the total num-
+ber of coins does not change, only the coins move from one wallet to another.
+
+Finally, the TestNode API documentation is available at:
+https://ainew.fr:2026/swagger
+
+I wish all curious visitors successful testing and smooth experience!
