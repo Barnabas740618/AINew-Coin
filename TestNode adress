@@ -14,3 +14,13 @@ Finally, the TestNode API documentation is available at:
 https://ainew.fr:2026/swagger
 
 I wish all curious visitors successful testing and smooth experience!
+
+Supplement!
+
+A few test users have been created for the website to test the transactions. Please note that the transaction of the coins' unique identifiers on the website is not yet functional, only balance management works.
+
+However, the balance of the wallet is not visible yet. However, if the sent transaction page reloads without an error message, the transaction is successful!
+
+The test users: Test_User_01 / password: Test_passw_01 Test_User_02 / password: Test_passw_02 Test_User_03 / password: Test_passw_03
+
+I wish everyone successful transactions!
