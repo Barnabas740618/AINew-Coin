@@ -1,0 +1,77 @@
+The Hidden Data Process for the AInew Coin!
+
+I’m sharing the code because there will be a web interface on the same page where, after entering the required data, the page will return hidden characters. However, this part will be paid. I don’t expect anyone to be able to search for hidden treasures only using the paid section.
+
+So, everyone can think about how they might reverse the hiding process based on the code.
+
+In short, the core of the process:
+
+We have the creation date of the coin and its unique identifier. These are concatenated in the order of GUID and DateTime, and a HASH value is generated from this.
+
+Then, it takes the two characters to hide and converts their ASCII decimal values to binary (base 2). Each character gives 8 bits, so the two characters are placed next to each other in the order they appear in the text, resulting in a 16-bit binary value.
+
+This value is then added to the last 16 bits of the previously obtained HASH value. The resulting new HASH is saved as the coin's HASH.
+
+Thus, the last 16 bits of the coin's HASH will contain the two hidden characters!
+
+using System;
+using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
+
+public class HashHider
+{
+    private readonly YourDbContext _context; // Adatbázis kontextus
+
+    public HashHider(YourDbContext context)
+    {
+        _context = context;
+    }
+
+    public string GenerateHiddenHash(Guid guid, DateTime dateTime)
+    {
+        // 1. Concatenate GUID and date
+        string rawString = guid.ToString() + dateTime.ToString("o");
+
+        // 2. Creating a hash with SHA256
+        byte[] hashBytes = ComputeHash(rawString);
+
+        // 3. Extract the last 16 bits of a hash and convert it to decimal
+        ushort last16Bits = BitConverter.ToUInt16(hashBytes[^2..]);
+
+        // 4. Querying a value read from a database
+        var hiddenDataEntry = _context.HiddenTextData
+            .Where(x => !x.HiddenBit) // Only HiddenBit == false data
+            .FirstOrDefault();
+
+        if (hiddenDataEntry == null)
+        {
+            throw new InvalidOperationException("No valid HiddenTextData entry found.");
+        }
+
+        ushort databaseValue = (ushort)hiddenDataEntry.DecimalValue;
+
+        // 5. Add database value
+        ushort modifiedValue = (ushort)(last16Bits + databaseValue);
+
+        // 6. Swap the last 16 bits of a hash
+        Array.Copy(BitConverter.GetBytes(modifiedValue), 0, hashBytes, hashBytes.Length - 2, 2);
+
+        // 7. Convert hash to hexadecimal
+        string finalHashHex = BitConverter.ToString(hashBytes).Replace("-", "");
+
+        // 8. Save hash to database 
+        hiddenDataEntry.HiddenBit = true;
+        _context.SaveChanges();
+
+        return finalHashHex;
+    }
+
+    private byte[] ComputeHash(string input)
+    {
+        using (SHA256 sha256 = SHA256.Create())
+        {
+            return sha256.ComputeHash(Encoding.UTF8.GetBytes(input));
+        }
+    }
+}
